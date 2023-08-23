@@ -1,29 +1,32 @@
 pipeline {
     agent any
+    tools {
+        maven 'M2_HOME'
+    }
     stages {
-        stage (checkout) {
+        stage ('build') {
             steps {
-              echo "Jenkins checkout the code from github"  
+                sh 'mvn clean'
+                sh 'mvn install'
+                sh 'mvn package'
             }
-            
         }
-        stage (build) {
+        stage ('test') {
             steps {
-              echo "start the build"  
+                sh 'mvn test'
+               
             }
-            
         }
-        stage (test) {
+        stage ('deploy') {
             steps {
-              echo "Jenkins does unit test"  
+               echo 'Deploy step'
+                sleep 5
             }
-            
         }
-        stage (deploy) {
+        stage ('docker') {
             steps {
-              echo "Jenkins deploy the artifacts to artifactory"  
+                echo 'image step'
             }
-            
         }
     }
 }
