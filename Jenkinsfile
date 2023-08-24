@@ -1,31 +1,60 @@
+// Jenkins Declarative Pipeline
 pipeline {
-    agent any
+
+    // This pipeline can run on any available Jenkins agent.
+    agent any 
+
+    // Using Maven from the 'M2_HOME' installation.
     tools {
         maven 'M2_HOME'
     }
+
+    // Environment variables setup.
+    environment {
+        ECR_REGISTRY = '518045124624.dkr.ecr.us-east-1.amazonaws.com/devops-repo'
+        ECR_CREDENTIAL = 'jenkins-ecr'
+    }
+
     stages {
-        stage ('build') {
+
+        // 1. Checkout code from Git.
+        stage('Checkout Code') {
             steps {
-                sh 'mvn clean'
-                sh 'mvn install'
-                sh 'mvn package'
+                git branch: 'main', url: 'https://github.com/Hermann90/helloworld_jan_22.git'
             }
         }
-        stage ('test') {
+
+        // 2. Build the code using Maven.
+        stage('Build Code') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        // 3. Test the code using Maven.
+        stage('Run Tests') {
             steps {
                 sh 'mvn test'
-               
             }
         }
-        stage ('deploy') {
+
+        // 4. Build the Docker image.
+        stage('Build Docker Image') {
             steps {
-               echo 'Deploy step'
-                sleep 5
+                script {
+                    dockerImage = docker.build "${ECR_REGISTRY}:$BUILD_NUMBER"
+                } 
             }
         }
-        stage ('docker') {
+
+        // 5. Push the Docker image to AWS ECR.
+        stage('Push to ECR') {
             steps {
-                echo 'image step'
+                script { 
+                    docker.withRegistry("https://${ECR_REGISTRY}", "ecr:us-east-1:${ECR_CREDENTIAL}") {
+                        dockerImage.push()
+                    }
+                }
             }
         }
     }
