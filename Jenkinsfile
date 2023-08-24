@@ -20,7 +20,7 @@ pipeline {
         // 1. Checkout code from Git.
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/Hermann90/helloworld_jan_22.git'
+                git branch: 'main', url: 'https://github.com/deixdvops/helloworld_jan_22.git'
             }
         }
 
