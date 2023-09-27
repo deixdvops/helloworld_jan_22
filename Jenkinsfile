@@ -1,5 +1,6 @@
 // Jenkins Declarative Pipeline
 pipeline {
+<<<<<<< HEAD
 
     // This pipeline can run on any available Jenkins agent.
     agent any 
@@ -57,5 +58,16 @@ pipeline {
                 }
             }
         }
+=======
+    agent any
+     stages{
+      stage('Hello'){
+       steps {
+         echo "Hello World"
+       }
+>>>>>>> parent of a3af3d3 (Update Jenkinsfile)
     }
+    
+    }
+
 }
